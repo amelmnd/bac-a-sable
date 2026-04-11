@@ -1,4 +1,5 @@
 import CodingameIcon from '../assets/codingameIcon.png';
+import devtoIcon from '../assets/devtoIcon.png'
 
 const socialLinks = [
     {
@@ -55,7 +56,14 @@ const socialLinks = [
       href: 'https://www.hackerrank.com/profile/amel_dev',
       isCustom: false,
       active: false,
-    },
+  },
+  {
+    title: 'Blog',
+    icon: devtoIcon,
+    href: 'https://dev.to/amel_in_tech',
+    isCustom: true,
+    active: true,
+  },
   ];
 
   export default socialLinks;
