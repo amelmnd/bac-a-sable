@@ -21,6 +21,7 @@ export default function ProjectEdit({
   const maxChars = 200; // Limite de caractères
   const [charCount, setCharCount] = useState(project.description?.length || 0);
 
+  const [localPreview, setLocalPreview] = useState(preview || project.imglink || '');
 
   useEffect(() => {
     const fetchEducation = async () => {
@@ -33,18 +34,30 @@ export default function ProjectEdit({
     };
     fetchEducation();
   }, []);
-  
+
   const handleDescriptionChange = (e) => {
     const value = e.target.value;
 
     if (value.length <= maxChars) {
       onChange(project.id, 'description', value);
-      setCharCount(value.length);
+      setCharCount(value.length); // ✅ mise à jour du compteur
     } else {
-      // Optionnel : alerte quand la limite est dépassée
       alert(`Limite de ${maxChars} caractères atteinte !`);
     }
   };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setLocalPreview(reader.result);
+      onImageChange(project.id, file);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className={styles.card}>
       <label className={styles.label}>
@@ -62,23 +75,17 @@ export default function ProjectEdit({
         <textarea
           className={styles.textarea}
           value={project.description || ''}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (value.length <= 200) {
-              onChange(project.id, 'description', value);
-            }
-          }}
+          onChange={handleDescriptionChange} // ✅ utilisation de la fonction
           maxLength={200}
         />
         <div
           className={`${styles.charCounter} ${
-            (project.description?.length || 0) >= 200 ? styles.charLimitReached : ''
+            charCount >= 200 ? styles.charLimitReached : ''
           }`}
         >
-          {(project.description?.length || 0)}/200 caractères
+          {charCount}/200 caractères
         </div>
       </label>
-
 
       <label className={styles.label}>
         Éducation :
@@ -88,7 +95,7 @@ export default function ProjectEdit({
           onChange={(e) => onChange(project.id, 'education_id', e.target.value)}
         >
           <option value="">-- Sélectionner --</option>
-            <option> Projet perso</option>
+          <option> Projet perso</option>
           {educations.map((edu) => (
             <option key={edu.id} value={edu.id}>
               {edu.institution}
@@ -144,10 +151,8 @@ export default function ProjectEdit({
 
       <label className={styles.label}>
         Image :
-        {preview ? (
-          <img src={preview} className={styles.image} alt="Preview" />
-        ) : project.imglink ? (
-          <img src={project.imglink} className={styles.image} alt={project.title} />
+        {localPreview ? (
+          <img src={localPreview} className={styles.image} alt={project.title} />
         ) : (
           <i className={styles.noImage}>Pas d’image</i>
         )}
@@ -155,7 +160,7 @@ export default function ProjectEdit({
           type="file"
           accept="image/*"
           className={styles.fileInput}
-          onChange={(e) => onImageChange(project.id, e.target.files[0])}
+          onChange={handleImageChange}
         />
       </label>
 

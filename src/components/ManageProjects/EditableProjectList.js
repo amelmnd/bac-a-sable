@@ -187,9 +187,8 @@ export default function EditableProjectList() {
             <button
               key={skill}
               type="button"
-              className={`${styles.chip} ${
-                selectedSkills.includes(skill) ? styles.chipActive : ''
-              }`}
+              className={`${styles.chip} ${selectedSkills.includes(skill) ? styles.chipActive : ''
+                }`}
               onClick={() => toggleSkill(skill)}
             >
               {skill}
